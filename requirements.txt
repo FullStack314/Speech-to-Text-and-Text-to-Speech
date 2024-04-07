@@ -1,0 +1,8 @@
+streamlit
+streamlit_extras
+openai
+tenacity
+PyPDF2
+SpeechRecognition
+gtts
+PyAudio

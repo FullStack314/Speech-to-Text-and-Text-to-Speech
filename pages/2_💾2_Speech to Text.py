@@ -7,56 +7,29 @@ from utils import st_def
 import chromadb     #0.4.24
 from   chromadb.utils import embedding_functions
 
-st_def.st_logo(title='Welcome 👋 to Chroma DB!', page_title="Chroma DB ",)
-st_def.st_load_book()
+st_def.st_logo(title='Speech to Text 👋!', page_title="Welcome ASR! ",)
+st_def.st_asr()
 #-----------------------------------------------
-EB_MODEL = "all-MiniLM-L6-v2"
-COL_NAME = "collection2"
+import speech_recognition as sr
 
-with st.spinner('Loading files...'):
-    client = chromadb.Client()
-    embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(model_name=EB_MODEL)
-    collection = client.get_or_create_collection(name=COL_NAME,  embedding_function=embedding_func,  metadata={"hnsw:space": "cosine"},)
-    st.markdown("### Documents in Chroma DB")
-    documents = [
-        "The latest iPhone model comes with impressive features and a powerful camera.",
-        "Exploring the beautiful beaches and vibrant culture of Bali is a dream for many travelers.",
-        "Einstein's theory of relativity revolutionized our understanding of space and time.",
-        "Traditional Italian pizza is famous for its thin crust, fresh ingredients, and wood-fired ovens.",
-        "The American Revolution had a profound impact on the birth of the United States as a nation.",
-        "Regular exercise and a balanced diet are essential for maintaining good physical health.",
-        "Leonardo da Vinci's Mona Lisa is considered one of the most iconic paintings in art history.",
-        "Climate change poses a significant threat to the planet's ecosystems and biodiversity.",
-        "Startup companies often face challenges in securing funding and scaling their operations.",
-        "Beethoven's Symphony No. 9 is celebrated for its powerful choral finale, 'Ode to Joy.'",
-        "Toronto is a nice place.",
-    ]
-    genres = ["technology","travel","science","food","history","fitness",        "art","climate change","business","music","country",]
-    collection.add(
-        documents=documents,
-        ids=[f"id{i}" for i in range(len(documents))],
-        metadatas=[{"genre": g} for g in genres]
-    )
+def speech_to_text():
+    recognizer = sr.Recognizer()
+    try:
+        with sr.Microphone() as source:
+            print("Speak...")
+            recognizer.adjust_for_ambient_noise(source, duration=0.2)
+            audio = recognizer.listen(source)
 
-for doc, genre in zip(documents, genres):
-    st.write(f"{doc} ( {genre})")
+        try:
+            print("Recognizing...")
+            text = recognizer.recognize_google(audio)
+            print(f"You said: {text}")
+        except sr.UnknownValueError:
+            print("Sorry, could not understand audio.")
+        except sr.RequestError as e:
+            print(f"Error: {e}")
+    except Exception as e:
+        st.error(f"An error occurred: {str(e)}")
 
-# url = st.text_input('🌐 Ask questions about above: ')
-
-if "msg1" not in st.session_state:      
-    st.session_state.msg1 = []      #111
-    st.session_state.msg1.append({"role": "system", 'content': "hi"})
-    st.session_state.msg1.append({"role": "assistant",   "content": "How May I Help You Today💬?"})
-
-for message in st.session_state.msg1[1:]:
-    with st.chat_message(message["role"]):  st.markdown(message["content"])     #222
-
-if prompt := st.chat_input("💬Ask me anything about the documents above!🍦"):
-    with st.chat_message("user"):           st.markdown(prompt)
-    st.session_state.msg1.append({"role": "user", "content": prompt})
-
-    response = collection.query(query_texts=[f"{prompt}"],        n_results=2,)
-    with st.chat_message("assistant"):          
-        st.markdown(response['documents'][0][0])
-        st.markdown(response['metadatas'][0][0]['genre'])
-    st.session_state.msg1.append({"role": "assistant", "content": response['documents'][0][0]})
+if __name__ == "__main__":
+    speech_to_text()

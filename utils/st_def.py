@@ -64,8 +64,8 @@ def st_summary():
     st.markdown("In this block, you import prepare_car_reviews_data() from car_data_etl.py, store the path to the raw review CSV datasets, and create chroma_car_reviews_dict, which stores the reviews in a ChromaDB-compatible format. You then display the ID, document text, and metadata associated with one of the reviews.")
     # st.image("./data/images/featureengineering.png")
 
-def st_case_study():
-        st.image("./data/images/NLP-Pipeline.png")
+def st_asr():
+        st.image("./data/images/asr.png")
         # main_contents="""
         #     ### 🚀 Bridge the Gap: Chatbots for Every Store 🍨
         #     Tired of missing out on sales due to limited customer support options? Struggling to keep up with growing customer inquiries? Store Spark empowers you to seamlessly integrate a powerful ChatGPT-powered chatbot into your website, revolutionizing your customer service and boosting engagement. No coding required! No modifications for current site needed!
